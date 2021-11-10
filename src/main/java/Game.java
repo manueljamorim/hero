@@ -12,6 +12,7 @@ import java.security.Key;
 public class Game {
     private Screen screen;
     private Hero hero;
+    private Arena arena;
 
     public Game(){
         try {
@@ -21,10 +22,15 @@ public class Game {
             screen.startScreen();
             screen.doResizeIfNecessary();
             hero = new Hero(10,10);
+            arena = new Arena(20,20);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void moveHero(Position position) {
+        hero.setPosition(position);
     }
 
     private void processKey(KeyStroke key) {
@@ -32,20 +38,19 @@ public class Game {
 
         switch (key.getKeyType()) {
             case ArrowUp:
-                hero.setY(hero.getY()-1);
+                moveHero(hero.moveUp());
                 break;
             case ArrowDown:
-                hero.setY(hero.getY()+1);
+                moveHero(hero.moveDown());
                 break;
             case ArrowLeft:
-                hero.setX(hero.getX()-1);
+                moveHero(hero.moveLeft());
                 break;
             case ArrowRight:
-                hero.setX(hero.getX()+1);
+                moveHero(hero.moveRight());
                 break;
         }
     }
-
     private void draw() throws IOException{
         screen.clear();
         hero.draw(screen);
