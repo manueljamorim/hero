@@ -1,4 +1,8 @@
+import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
@@ -11,7 +15,6 @@ import java.security.Key;
 
 public class Game {
     private Screen screen;
-    private Hero hero;
     private Arena arena;
 
     public Game(){
@@ -21,7 +24,6 @@ public class Game {
             screen.setCursorPosition(null);
             screen.startScreen();
             screen.doResizeIfNecessary();
-            hero = new Hero(10,10);
             arena = new Arena(20,20);
 
         } catch (IOException e) {
@@ -29,31 +31,13 @@ public class Game {
         }
     }
 
-    private void moveHero(Position position) {
-        hero.setPosition(position);
-    }
-
     private void processKey(KeyStroke key) {
-        System.out.println(key);
-
-        switch (key.getKeyType()) {
-            case ArrowUp:
-                moveHero(hero.moveUp());
-                break;
-            case ArrowDown:
-                moveHero(hero.moveDown());
-                break;
-            case ArrowLeft:
-                moveHero(hero.moveLeft());
-                break;
-            case ArrowRight:
-                moveHero(hero.moveRight());
-                break;
-        }
+        arena.processKey(key);
     }
+
     private void draw() throws IOException{
         screen.clear();
-        hero.draw(screen);
+        arena.draw(screen.newTextGraphics());
         screen.refresh();
     }
 
@@ -68,6 +52,7 @@ public class Game {
                     break;
                 }
                 processKey(key);
+                arena.retrieveCoins();
                 draw();
             }
 
