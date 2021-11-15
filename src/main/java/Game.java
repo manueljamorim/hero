@@ -53,6 +53,10 @@ public class Game {
                 }
                 processKey(key);
                 arena.retrieveCoins();
+                if(arena.moveMonsters()==false){
+                    screen.close();
+                    break;
+                }
                 draw();
             }
 

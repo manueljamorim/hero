@@ -14,6 +14,7 @@ public class Arena {
     private Hero hero;
     private List<Wall> walls;
     private List<Coin> coins;
+    private List<Monster> monsters;
 
 
     public Arena(int width, int height){
@@ -22,6 +23,7 @@ public class Arena {
         hero = new Hero(10,10);
         walls = createWalls();
         coins = createCoins();
+        monsters = createMonster();
 
     }
 
@@ -63,11 +65,58 @@ public class Arena {
         return coins;
     }
 
+    private List<Monster> createMonster() {
+        Random random = new Random();
+        ArrayList<Monster> monsters = new ArrayList<>();
+        Monster new_monster = null;
+        boolean add_monster = true;
+        while(monsters.size()<2){
+            new_monster = new Monster(random.nextInt(width - 2) + 1, random.nextInt(height - 2) + 1);
 
-    private boolean canHeroMove(Position position){
+            //Avoid monster over hero
+            if(new_monster.getPosition().equals(hero.getPosition())) continue;
+
+            //Avoid monster over coins
+            for (Coin coin: coins){
+                if(new_monster.getPosition().equals(coin.getPosition())){
+                    add_monster = false;
+                    break;
+                }
+            }
+
+            //Avoid monster over monster
+            for (Monster monster: monsters){
+                if(new_monster.getPosition().equals(monster.getPosition())){
+                    add_monster = false;
+                    break;
+                }
+            }
+
+            if(add_monster) monsters.add(new_monster);
+
+        }
+        return monsters;
+    }
+
+
+    private boolean canMove(Position position){
         if(position.getX()>=1 && position.getY()>=1 && position.getX()<width-1 && position.getY()<height-1) return true;
         else return false;
     }
+
+    public boolean moveMonsters(){
+        for(Monster monster: monsters){
+            monster.setPosition(monster.move(hero));
+            //verifyMonsterCollisions()
+            if(monster.getPosition().equals(hero.getPosition())){
+                System.out.println("END! YOU DIED!");
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 
     public void retrieveCoins(){
         for (int j = 0; j<coins.size(); j++){
@@ -79,8 +128,11 @@ public class Arena {
     }
 
     public void moveHero(Position position) {
-        if (canHeroMove(position)) hero.setPosition(position);
+        if (canMove(position)) hero.setPosition(position);
     }
+
+
+
 
     public void processKey(KeyStroke key) {
         System.out.println(key);
@@ -108,6 +160,8 @@ public class Arena {
             wall.draw(screen);
         for (Coin coin : coins)
             coin.draw(screen);
+        for (Monster monster : monsters)
+            monster.draw(screen);
         hero.draw(screen);
     }
 
